@@ -20,7 +20,7 @@ def get_date_info(date: str) -> Response:
     return requests.get(Consts.base_url, headers=Consts.headers, params=params)
 
 
-def post_check(date: str, lighted_rooms: list[list[bool]]) -> Response:
+def post_check(date: str, lighted_rooms: list[list[bool]]) -> bool:
     floors_count = len(lighted_rooms)
     flats_on_floor = len(lighted_rooms[0])
 
@@ -40,10 +40,11 @@ def post_check(date: str, lighted_rooms: list[list[bool]]) -> Response:
         }
     }
 
-    return requests.post(Consts.base_url, headers=Consts.headers, json=data_to_check)
+    json = requests.post(Consts.base_url, headers=Consts.headers, json=data_to_check).json()
+    return json["message"] == "correct answer"
 
 
-def get_lighted(date: str) -> list[list[bool]]:
+def get_lighted(date: str) -> (list[list[bool]], bool):
     date_info_json = get_date_info(date).json()
     flats_on_floor = date_info_json["message"]["flats_count"]["data"]
     floors_count = len(date_info_json["message"]["windows"]["data"])
@@ -65,7 +66,7 @@ def get_lighted(date: str) -> list[list[bool]]:
                 if lighted_windows[i][count + w]:
                     lighted_rooms[i][j] = True
 
-    return lighted_rooms
+    return lighted_rooms, post_check(date, lighted_rooms)
 
 
 class Tests(unittest.TestCase):
@@ -74,8 +75,7 @@ class Tests(unittest.TestCase):
         dates = json["message"]
 
         for date in dates:
-            lighted_rooms = get_lighted(date)
-            message = post_check(date, lighted_rooms).json()["message"]
+            lighted_rooms, correct = get_lighted(date)
 
-            self.assertTrue(message == "correct answer", f"On date {date} lighted rooms are incorrect")
+            self.assertTrue(correct, f"On date {date} lighted rooms are incorrect")
 
