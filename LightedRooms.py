@@ -69,6 +69,32 @@ def get_lighted(date: str) -> (list[list[bool]], bool):
     return lighted_rooms, post_check(date, lighted_rooms)
 
 
+def get_flat_number_in_floor(windows_for_flat: list[int], window: int) -> int:
+    for i in range(len(windows_for_flat)):
+        window -= windows_for_flat[i]
+        if window < 0:
+            return i + 1
+
+
+def get_windows(date: str) -> list[list[(bool, int)]]:
+    date_info_json = get_date_info(date).json()
+    flats_on_floor = date_info_json["message"]["flats_count"]["data"]
+    floors_count = len(date_info_json["message"]["windows"]["data"])
+    windows_for_flat = date_info_json["message"]["windows_for_flat"]["data"]
+    lighted_windows = [[] for _ in range(floors_count)]
+
+    for i in range(floors_count):
+        lighted_windows[i] = date_info_json["message"]["windows"]["data"][f"floor_{i + 1}"]
+
+    windows_with_number = [[[False, 0] for _ in range(sum(windows_for_flat))] for _ in range(floors_count)]
+    for i in range(floors_count):
+        for j in range(sum(windows_for_flat)):
+            windows_with_number[i][j][0] = lighted_windows[i][j]
+            windows_with_number[i][j][1] = i * flats_on_floor + get_flat_number_in_floor(windows_for_flat, j)
+
+    return windows_with_number
+
+
 class Tests(unittest.TestCase):
     def test_get_lighted(self):
         json = get_dates().json()
@@ -78,4 +104,3 @@ class Tests(unittest.TestCase):
             lighted_rooms, correct = get_lighted(date)
 
             self.assertTrue(correct, f"On date {date} lighted rooms are incorrect")
-
