@@ -1,9 +1,11 @@
 import requests
 
 url = 'https://olimp.miet.ru/ppo_it_final'
-getparams = {
+getheads = {
     'X-Auth-Token': 'ppo_10_10320',
 }
-response = requests.get(url=url, params=getparams)
+getparams = {
+}
+response = requests.get(url=url, params=getparams, headers=getheads)
 data = response.json()
 print(data)
