@@ -1,16 +1,19 @@
 import requests
+from requests import Response
+from dataclasses import dataclass
 
-url = 'https://olimp.miet.ru/ppo_it_final'
-getheads = {
-    'X-Auth-Token': 'ppo_10_10320',
-}
 
-getparams = {
-    'day': '25',
-    'month': '01',
-    'year': '23',
-}
+@dataclass
+class Consts:
+    base_url = "https://olimp.miet.ru/ppo_it_final"
+    headers = {"X-Auth-Token": "ppo_9_19633"}
 
-response = requests.get(url=url, params=getparams, headers=getheads)
-data = response.json()
-print(data)
+
+def get_dates() -> Response:
+    return requests.get(Consts.base_url + "/date", headers=Consts.headers)
+
+
+def get_date_info(date: str) -> Response:
+    day, month, year = date.split("-")
+    params = {"day": day, "month": month, "year": year}
+    return requests.get(Consts.base_url, headers=Consts.headers, params=params)
