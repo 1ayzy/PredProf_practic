@@ -12,11 +12,16 @@
 </head>
 <body>
 
-
-<center><h1>{{date_info}}</h1></center>
+<br><br>
+<center><h1>Информация о дате</h1></center>
+<br>
+<br>
 <center>
     <br>
     <div class="card" style="width: 60rem;">
+        <br>
+        {{date}}
+        <br>
         <br>
         <div class="container text-center">
             <div class="row row-cols-auto">
@@ -41,11 +46,54 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="container text-center">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card" style="height: 10rem;">
+                                <div class="card-body">
+                                    Входные данные:
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card" style="height: 10rem;">
+                                <div class="card-body">
+                                    Количество комнат на этаже: {{rooms_per_floor}}
+                                    <br>
+                                    <br>
+                                    Окна на этаже: {{windows_per_floor}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <br>
+                    <div class="row">
+                        <div class="col">
+                            <div class="card" style="height: 10rem;">
+                                <div class="card-body">
+                                    Ответ:
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card" style="height: 10rem;">
+                                <div class="card-body">
+                                    Количество комнат: {{count_numbers}}
+                                    <br>
+                                    <br>
+                                    Номера комнат: {{numbers}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <br>
             </div>
         </div>
+        <br>
     </div>
-    <br>
 </center>
 
 
