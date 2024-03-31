@@ -95,6 +95,23 @@ def get_windows(date: str) -> list[list[(bool, int)]]:
     return windows_with_number
 
 
+def get_lighted_flats_numbers(date: str) -> list[int]:
+    lighted, _ = get_lighted(date)
+
+    floors_count = len(lighted)
+    flats_on_floor = len(lighted[0])
+
+    lighted_rooms_count = 0
+    lighted_rooms_numbers = []
+    for i in range(floors_count):
+        for j in range(flats_on_floor):
+            if lighted[i][j]:
+                lighted_rooms_count += 1
+                lighted_rooms_numbers.append(i * flats_on_floor + j + 1)
+
+    return lighted_rooms_numbers
+
+
 class Tests(unittest.TestCase):
     def test_get_lighted(self):
         json = get_dates().json()
