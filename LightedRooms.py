@@ -1,6 +1,7 @@
 import requests
 from requests import Response
 from dataclasses import dataclass
+import unittest
 
 
 @dataclass
@@ -19,11 +20,30 @@ def get_date_info(date: str) -> Response:
     return requests.get(Consts.base_url, headers=Consts.headers, params=params)
 
 
-def post_check(data_to_check: dict) -> Response:
+def post_check(date: str, lighted_rooms: list[list[bool]]) -> Response:
+    floors_count = len(lighted_rooms)
+    flats_on_floor = len(lighted_rooms[0])
+
+    lighted_rooms_count = 0
+    lighted_rooms_numbers = []
+    for i in range(floors_count):
+        for j in range(flats_on_floor):
+            if lighted_rooms[i][j]:
+                lighted_rooms_count += 1
+                lighted_rooms_numbers.append(i * flats_on_floor + j + 1)
+
+    data_to_check = {
+        "date": date,
+        "data": {
+            "count": lighted_rooms_count,
+            "rooms": lighted_rooms_numbers
+        }
+    }
+
     return requests.post(Consts.base_url, headers=Consts.headers, json=data_to_check)
 
 
-def get_lighted(date: str) -> (list[list[bool]], int, list[int]):
+def get_lighted(date: str) -> list[list[bool]]:
     date_info_json = get_date_info(date).json()
     flats_on_floor = date_info_json["message"]["flats_count"]["data"]
     floors_count = len(date_info_json["message"]["windows"]["data"])
@@ -42,40 +62,17 @@ def get_lighted(date: str) -> (list[list[bool]], int, list[int]):
                 if lighted_windows[i][count + w]:
                     lighted_rooms[i][j] = True
 
-    lighted_rooms_count = 0
-    lighted_rooms_numbers = []
-    for i in range(floors_count):
-        for j in range(flats_on_floor):
-            if lighted_rooms[i][j]:
-                lighted_rooms_count += 1
-                lighted_rooms_numbers.append(i * flats_on_floor + j + 1)
-
-    return lighted_rooms, lighted_rooms_count, lighted_rooms_numbers
+    return lighted_rooms
 
 
-def unit_test() -> dict[str, bool]:
-    json = get_dates().json()
+class Tests(unittest.TestCase):
+    def test_get_lighted(self):
+        json = get_dates().json()
+        dates = json["message"]
 
-    dates = json["message"]
+        for date in dates:
+            lighted_rooms = get_lighted(date)
+            message = post_check(date, lighted_rooms).json()["message"]
 
-    ret = {}
+            self.assertTrue(message == "correct answer", f"On date {date} lighted rooms are incorrect")
 
-    for i in dates:
-        lighted_rooms, lighted_rooms_count, lighted_rooms_numbers = get_lighted(i)
-
-        data_to_check = dict()
-        data_to_check["date"] = i
-        data_to_check["data"] = {
-            "count": lighted_rooms_count,
-            "rooms": lighted_rooms_numbers
-        }
-
-        resp = post_check(data_to_check).json()
-
-        ret[i] = resp["message"] == "correct answer"
-
-    return ret
-
-
-if __name__ == '__main__':
-    print(unit_test())
