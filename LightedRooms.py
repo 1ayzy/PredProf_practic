@@ -48,7 +48,10 @@ def get_lighted(date: str) -> list[list[bool]]:
     flats_on_floor = date_info_json["message"]["flats_count"]["data"]
     floors_count = len(date_info_json["message"]["windows"]["data"])
     windows_for_flat = date_info_json["message"]["windows_for_flat"]["data"]
-    lighted_windows = list(date_info_json["message"]["windows"]["data"].values())
+    lighted_windows = [[] for _ in range(floors_count)]
+
+    for i in range(floors_count):
+        lighted_windows[i] = date_info_json["message"]["windows"]["data"][f"floor_{i + 1}"]
 
     lighted_rooms = [[False for _ in range(flats_on_floor)] for _ in range(floors_count)]
 
