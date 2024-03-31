@@ -11,7 +11,7 @@ def dates_render():
 def date_render(date):
     date_info = get_date_info(str(date)).json()["message"]
     print(date_info)
-    return render_template("date.html", date_info=date_info, windows = [[[True, 1], [True, 2]], [[False, 1], [True, 1]], [[True, 1], [False, 11]]], date=date)
+    return render_template("date.html", date_info=date_info, windows = [[[True, 1], [True, 2]], [[False, 1], [True, 1]], [[True, 1], [False, 11]]], date=date, numbers='1, 2' , count_numbers=2, rooms_per_floor=1, windows_per_floor=1)
 
 def main():
     app.run(port=5000, host='127.0.0.1', debug=True)
